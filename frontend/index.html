@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7f7f7;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e5e5e5;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 10px 0;
+            cursor: pointer;
+            color: #555;
+            font-size: 0.95em;
+            transition: color 0.2s;
+        }
+
+        .sidebar li:hover {
+            color: #007bff;
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 20px;
+            width: calc(100% - 270px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .user-info-header {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section, .list-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2, .list-section h2 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #444;
+            font-size: 0.9em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+            font-size: 0.9em;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .user-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .user-card {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #007bff;
+            transition: transform 0.2s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #007bff;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .success-message {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .container {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+            .user-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                display: none;
+            }
+            .container {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menú</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Usuarios</li>
+            <li>Configuración</li>
+            <li>Cerrar Sesión</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Gestión de Usuarios</h1>
+            <div class="user-info-header">Naiuska Janeth Zipa Intriago</div>
+        </div>
+        
+        <div class="content">
+            <div class="success-message" id="successMessage">
+                ¡Usuario creado exitosamente!
+            </div>
+
+            <div class="form-section">
+                <h2>Registrar Nuevo Usuario</h2>
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                        <div class="error" id="nombreError">El nombre es requerido (mínimo 2 caracteres)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo electrónico *</label>
+                        <input type="email" id="email" name="email" required>
+                        <div class="error" id="emailError">Ingrese un email válido</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono">
+                        <div class="error" id="telefonoError">Formato de teléfono inválido</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edad">Edad *</label>
+                        <input type="number" id="edad" name="edad" min="18" max="100" required>
+                        <div class="error" id="edadError">La edad debe estar entre 18 y 100 años</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pais">País *</label>
+                        <select id="pais" name="pais" required>
+                            <option value="">Seleccione un país</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Bolivia">Bolivia</option>
+                            <option value="Brasil">Brasil</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Ecuador">Ecuador</option>
+                            <option value="Paraguay">Paraguay</option>
+                            <option value="Perú">Perú</option>
+                            <option value="Uruguay">Uruguay</option>
+                            <option value="Venezuela">Venezuela</option>
+                        </select>
+                        <div class="error" id="paisError">Seleccione un país</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comentarios">Comentarios adicionales</label>
+                        <textarea id="comentarios" name="comentarios" rows="4" placeholder="Información adicional (opcional)"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Registrar Usuario</button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">🔄 Limpiar</button>
+                </form>
+            </div>
+
+            <div class="list-section">
+                <h2>Lista de Usuarios Registrados</h2>
+                <button type="button" class="btn btn-secondary" onclick="cargarUsuarios()">🔄 Actualizar Lista</button>
+                <div id="userList" class="user-list">
+                    <div class="loading">Cargando usuarios...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
